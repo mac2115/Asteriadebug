@@ -123,7 +123,7 @@ function autoraid()
 					end
 				end
 			end
-			queue_on_teleport(loadstring(game:HttpGet("https://raw.githubusercontent.com/mac2115/Asteriadebug/main/Asteriaunreleased"))())
+			queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/mac2115/Asteriadebug/main/Asteriaunreleased"))()')
 			queue_on_teleport('getgenv().Settings.Autoraid.Toggle = true')
 		end
 	end
