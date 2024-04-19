@@ -21,7 +21,7 @@ getgenv().Settings = {
 	Speed = { Toggle = false, Speed = 100 },
 	InfJump = false,
 	JumpHeight = 50,
-	Autoraid = { Toggle = true},
+	Autoraid = { Toggle = false},
 }
 
 function check(dupson)
@@ -115,15 +115,6 @@ function autoraid()
 								queue_on_teleport(
 									'loadstring(game:HttpGet("https://raw.githubusercontent.com/mac2115/Asteriadebug/main/Asteriaunreleased"))()'
 								)
-								queue_on_teleport([[getgenv().Settings = {
-									Autofarm = { Toggle = false, Mob = "Fishbone", Position = -10 },
-									TweenSpeed = 150,
-									Fly = { Toggle = false, Speed = 100 },
-									Speed = { Toggle = false, Speed = 100 },
-									InfJump = false,
-									JumpHeight = 50,
-									Autoraid = { Toggle = true },
-								}]])
 								_G.queued = true
 							end
 						end
@@ -144,22 +135,12 @@ function autoraid()
 					queue_on_teleport(
 						'loadstring(game:HttpGet("https://raw.githubusercontent.com/mac2115/Asteriadebug/main/Asteriaunreleased"))()'
 					)
-					queue_on_teleport([[getgenv().Settings = {
-						Autofarm = { Toggle = false, Mob = "Fishbone", Position = -10 },
-						TweenSpeed = 150,
-						Fly = { Toggle = false, Speed = 100 },
-						Speed = { Toggle = false, Speed = 100 },
-						InfJump = false,
-						JumpHeight = 50,
-						Autoraid = { Toggle = true },
-					}]])
 					_G.queued = true
 				end
 			end
 		end
 	end
 end
-
 
 
 
