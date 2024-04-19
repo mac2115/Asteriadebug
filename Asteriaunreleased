@@ -11,7 +11,7 @@ local clonef = clonefunction
 local combat = ReplicatedStorage.Remotes.ServerCombatHandler
 local NextFrame = RunService.Heartbeat
 local ForceStop = false
-local loading= clonef(loadstring)
+local loading = clonef(loadstring)
 local mobs = { "Fishbone", "Frisker", "LostSoul", "Jackal" }
 
 getgenv().Settings = {
@@ -113,13 +113,11 @@ function autoraid()
 						plr.Kisuke:FireServer("Yes")
 						for i = 0, 1 do
 							if not _G.queued then
-								queue_on_teleport(
-									[[
+								queue_on_teleport([[
 									local clonef = clonefunction
 									local loading= clonef(loadstring)
 									loading(game:HttpGet("https://raw.githubusercontent.com/mac2115/Asteriadebug/main/Asteriaunreleased"))()
-									]]
-								)
+									]])
 								queue_on_teleport([[
 										repeat task.wait() until getgenv().loaded == true
 										getgenv().Settings = {
@@ -130,6 +128,7 @@ function autoraid()
 										InfJump = false,
 										JumpHeight = 50,
 										Autoraid = { Toggle = true },
+										Noclip = false,
 									}]])
 								_G.queued = true
 							end
@@ -144,20 +143,18 @@ function autoraid()
 				if v.Name ~= plr.Name then
 					local dist = (plr.Character.HumanoidRootPart.Position - v.HumanoidRootPart.Position).magnitude
 					if dist <= 300 then
-						plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0,3,0)
+						plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
 						v.Humanoid.Health = 0
 					end
 				end
 			end
 			for i = 0, 1 do
 				if not _G.queued then
-					queue_on_teleport(
-						[[
+					queue_on_teleport([[
 						local clonef = clonefunction
 						local loading= clonef(loadstring)
 						loading(game:HttpGet("https://raw.githubusercontent.com/mac2115/Asteriadebug/main/Asteriaunreleased"))()
-						]]
-					)
+						]])
 					queue_on_teleport([[
 						repeat task.wait() until getgenv().loaded == true
 						getgenv().Settings = {
@@ -168,7 +165,7 @@ function autoraid()
 						InfJump = false,
 						JumpHeight = 50,
 						Autoraid = { Toggle = true },
-						Noclip = true,
+						Noclip = false,
 					}]])
 					_G.queued = true
 				end
@@ -217,7 +214,7 @@ local UserInputService = game:GetService("UserInputService")
 local walkie = nil
 
 function speed()
-	if plr.Character and plr.Character:FindFirstChild('HumanoidRootPart') then
+	if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
 		if getgenv().Settings.Speed.Toggle then
 			if walkie == nil then
 				walkie = Instance.new("BodyVelocity")
@@ -238,7 +235,6 @@ function speed()
 		end
 	end
 end
-
 
 function infjump()
 	if not getgenv().Settings.InfJump then
