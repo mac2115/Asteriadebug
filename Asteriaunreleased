@@ -138,7 +138,7 @@ function autoraid()
 			for i, v in next, Workspace.Entities:GetChildren() do
 				if v.Name ~= plr.Name then
 					local dist = (plr.Character.HumanoidRootPart.Position - v.HumanoidRootPart.Position).magnitude
-					if dist <= 45 then
+					if dist <= 100 then
 						plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0,3,0)
 						v.Humanoid.Health = 0
 					end
