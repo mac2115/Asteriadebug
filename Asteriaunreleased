@@ -155,6 +155,7 @@ function autoraid()
 	end
 end
 
+
 function getmob()
 	local max = math.huge
 	local mob
@@ -588,13 +589,11 @@ ThemeManager:ApplyToTab(Tabs["UI Settings"])
 
 SaveManager:LoadAutoloadConfig()
 
-task.spawn(function()
-	RunService.RenderStepped:Connect(function()
-		fly()
-		speed()
-		noclip()
-		infjump()
-		autofarm()
-		autoraid()
-	end)
+RunService.RenderStepped:Connect(function()
+	fly()
+	speed()
+	noclip()
+	infjump()
+	autofarm()
+	autoraid()
 end)
