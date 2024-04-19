@@ -1,3 +1,7 @@
+repeat
+	task.wait()
+until game:IsLoaded()
+
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -95,13 +99,11 @@ function Tween(Target, mob)
 	end
 end
 
-
 local Kisuke
+_G.queued = false
 function autoraid()
 	if getgenv().Settings.Autoraid.Toggle then
 		if game.PlaceId == 14069678431 then
-			queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/mac2115/Asteriadebug/main/Asteriaunreleased"))()')
-			queue_on_teleport('getgenv().Settings.Autoraid.Toggle = true')
 			Kisuke = Workspace.NPCs.RaidBoss.Kisuke
 			if Kisuke and plr.Character then
 				if plr.PlayerGui.MissionsUI.MainFrame.Visible then
@@ -109,6 +111,15 @@ function autoraid()
 						fireclickdetector(Kisuke:FindFirstChildWhichIsA("ClickDetector"))
 					else
 						plr.Kisuke:FireServer("Yes")
+						for i = 0, 1 do
+							if not _G.queued then
+								queue_on_teleport(
+									'loadstring(game:HttpGet("https://raw.githubusercontent.com/mac2115/Asteriadebug/main/Asteriaunreleased"))()'
+								)
+								queue_on_teleport("getgenv().Settings.Autoraid.Toggle = true")
+								_G.queued = true
+							end
+						end
 					end
 				else
 					plr.Character.CharacterHandler.Remotes.PartyCreate:FireServer()
@@ -123,12 +134,18 @@ function autoraid()
 					end
 				end
 			end
-			queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/mac2115/Asteriadebug/main/Asteriaunreleased"))()')
-			queue_on_teleport('getgenv().Settings.Autoraid.Toggle = true')
+			for i = 0, 1 do
+				if not _G.queued then
+					queue_on_teleport(
+						'loadstring(game:HttpGet("https://raw.githubusercontent.com/mac2115/Asteriadebug/main/Asteriaunreleased"))()'
+					)
+					queue_on_teleport("getgenv().Settings.Autoraid = {Toggle = true}")
+					_G.queued = true
+				end
+			end
 		end
 	end
 end
-
 
 function getmob()
 	local max = math.huge
