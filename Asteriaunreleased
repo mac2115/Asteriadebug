@@ -134,7 +134,7 @@ function autoraid()
 			end
 		else
 			for i, v in next, Workspace.Entities:GetChildren() do
-				if v.Name ~= plr.Name and v.Humanoid.Health > 0 and v:FindFirstChildWhichIsA("Part") then
+				if v.Name ~= plr.Name then
 					if isnetworkowner(v.HumanoidRootPart) then
 						setsimulationradius(math.huge)
 						v.Humanoid.Health = 0
