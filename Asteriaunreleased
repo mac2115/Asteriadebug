@@ -21,7 +21,7 @@ getgenv().Settings = {
 	Speed = { Toggle = false, Speed = 100 },
 	InfJump = false,
 	JumpHeight = 50,
-	Autoraid = { Toggle = true },
+	Autoraid = { Toggle = true},
 }
 
 function check(dupson)
@@ -136,6 +136,7 @@ function autoraid()
 			for i, v in next, Workspace.Entities:GetChildren() do
 				if v.Name ~= plr.Name then
 					v.Humanoid.Health = 0
+					print('attempting instant kill')
 				end
 			end
 			for i = 0, 1 do
