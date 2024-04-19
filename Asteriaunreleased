@@ -11,7 +11,7 @@ local clonef = clonefunction
 local combat = ReplicatedStorage.Remotes.ServerCombatHandler
 local NextFrame = RunService.Heartbeat
 local ForceStop = false
-local loadstring = clonef(loadstring)
+local loading= clonef(loadstring)
 local mobs = { "Fishbone", "Frisker", "LostSoul", "Jackal" }
 
 getgenv().Settings = {
@@ -114,7 +114,9 @@ function autoraid()
 						for i = 0, 1 do
 							if not _G.queued then
 								queue_on_teleport(
-									'loadstring(game:HttpGet("https://raw.githubusercontent.com/mac2115/Asteriadebug/main/Asteriaunreleased"))()'
+									[[local loading= clonef(loadstring)
+									loading(game:HttpGet("https://raw.githubusercontent.com/mac2115/Asteriadebug/main/Asteriaunreleased"))()
+									]]
 								)
 								queue_on_teleport([[
 										repeat task.wait() until getgenv().loaded == true
@@ -148,8 +150,10 @@ function autoraid()
 			for i = 0, 1 do
 				if not _G.queued then
 					queue_on_teleport(
-						'loadstring(game:HttpGet("https://raw.githubusercontent.com/mac2115/Asteriadebug/main/Asteriaunreleased"))()'
-					)
+									[[local loading= clonef(loadstring)
+									loading(game:HttpGet("https://raw.githubusercontent.com/mac2115/Asteriadebug/main/Asteriaunreleased"))()
+									]]
+								)
 					queue_on_teleport([[
 						repeat task.wait() until getgenv().loaded == true
 						getgenv().Settings = {
@@ -374,9 +378,9 @@ end
 --ui
 local repo = "https://raw.githubusercontent.com/HTDBarsi/LinoriaLib/main/"
 
-local Library = loadstring(game:HttpGet(repo .. "Library.lua"))()
-local ThemeManager = loadstring(game:HttpGet(repo .. "addons/ThemeManager.lua"))()
-local SaveManager = loadstring(game:HttpGet(repo .. "addons/SaveManager.lua"))()
+local Library = loading(game:HttpGet(repo .. "Library.lua"))()
+local ThemeManager = loading(game:HttpGet(repo .. "addons/ThemeManager.lua"))()
+local SaveManager = loading(game:HttpGet(repo .. "addons/SaveManager.lua"))()
 local Window = Library:CreateWindow({
 
 	Title = "Asteria.lol v1.0.1",
