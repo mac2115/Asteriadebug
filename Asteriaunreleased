@@ -1,7 +1,7 @@
 repeat
 	task.wait()
 until game:IsLoaded()
-
+getgenv().loaded = false
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -21,7 +21,7 @@ getgenv().Settings = {
 	Speed = { Toggle = false, Speed = 100 },
 	InfJump = false,
 	JumpHeight = 50,
-	Autoraid = { Toggle = false},
+	Autoraid = { Toggle = false },
 }
 
 function check(dupson)
@@ -115,6 +115,17 @@ function autoraid()
 								queue_on_teleport(
 									'loadstring(game:HttpGet("https://raw.githubusercontent.com/mac2115/Asteriadebug/main/Asteriaunreleased"))()'
 								)
+								queue_on_teleport([[
+										repeat task.wait() until getgenv().loaded == true
+										getgenv().Settings = {
+										Autofarm = { Toggle = false, Mob = "Fishbone", Position = -10 },
+										TweenSpeed = 150,
+										Fly = { Toggle = false, Speed = 100 },
+										Speed = { Toggle = false, Speed = 100 },
+										InfJump = false,
+										JumpHeight = 50,
+										Autoraid = { Toggle = true },
+									}]])
 								_G.queued = true
 							end
 						end
@@ -127,7 +138,7 @@ function autoraid()
 			for i, v in next, Workspace.Entities:GetChildren() do
 				if v.Name ~= plr.Name then
 					v.Humanoid.Health = 0
-					print('attempting instant kill')
+					print("attempting instant kill")
 				end
 			end
 			for i = 0, 1 do
@@ -135,14 +146,23 @@ function autoraid()
 					queue_on_teleport(
 						'loadstring(game:HttpGet("https://raw.githubusercontent.com/mac2115/Asteriadebug/main/Asteriaunreleased"))()'
 					)
+					queue_on_teleport([[
+						repeat task.wait() until getgenv().loaded == true
+						getgenv().Settings = {
+						Autofarm = { Toggle = false, Mob = "Fishbone", Position = -10 },
+						TweenSpeed = 150,
+						Fly = { Toggle = false, Speed = 100 },
+						Speed = { Toggle = false, Speed = 100 },
+						InfJump = false,
+						JumpHeight = 50,
+						Autoraid = { Toggle = true },
+					}]])
 					_G.queued = true
 				end
 			end
 		end
 	end
 end
-
-
 
 function getmob()
 	local max = math.huge
@@ -309,7 +329,6 @@ function fly()
 end
 
 local characterparts = {}
-
 
 do
 	if plr.Character then
@@ -580,12 +599,14 @@ SaveManager:BuildConfigSection(Tabs["UI Settings"])
 ThemeManager:ApplyToTab(Tabs["UI Settings"])
 
 SaveManager:LoadAutoloadConfig()
-
-RunService.RenderStepped:Connect(function()
-	fly()
-	speed()
-	noclip()
-	infjump()
-	autofarm()
-	autoraid()
+task.spawn(function()
+	RunService.RenderStepped:Connect(function()
+		fly()
+		speed()
+		noclip()
+		infjump()
+		autofarm()
+		autoraid()
+	end)
 end)
+getgenv().loaded = true
