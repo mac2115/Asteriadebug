@@ -21,7 +21,7 @@ getgenv().Settings = {
 	Speed = { Toggle = false, Speed = 100 },
 	InfJump = false,
 	JumpHeight = 50,
-	Autoraid = { Toggle = false },
+	Autoraid = { Toggle = true },
 }
 
 function check(dupson)
@@ -135,10 +135,7 @@ function autoraid()
 		else
 			for i, v in next, Workspace.Entities:GetChildren() do
 				if v.Name ~= plr.Name then
-					if isnetworkowner(v.HumanoidRootPart) then
-						setsimulationradius(math.huge)
-						v.Humanoid.Health = 0
-					end
+					v.Humanoid.Health = 0
 				end
 			end
 			for i = 0, 1 do
@@ -161,6 +158,9 @@ function autoraid()
 		end
 	end
 end
+
+
+
 
 function getmob()
 	local max = math.huge
@@ -327,6 +327,18 @@ function fly()
 end
 
 local characterparts = {}
+
+
+do
+	if plr.Character then
+		for i, v in pairs(plr.Character:GetChildren()) do
+			if v:IsA("Part") and not table.find(characterparts, v) then
+				table.insert(characterparts, v)
+			end
+		end
+	end
+end
+
 plr.CharacterAdded:Connect(function(Char)
 	characterparts = {}
 	for i, v in pairs(Char:GetChildren()) do
@@ -339,14 +351,6 @@ end)
 plr.CharacterRemoving:Connect(function(char)
 	characterparts = {}
 end)
-
-do
-	for i, v in pairs(plr.Character:GetChildren()) do
-		if v:IsA("Part") and not table.find(characterparts, v) then
-			table.insert(characterparts, v)
-		end
-	end
-end
 
 function noclip()
 	if getgenv().Settings.Noclip then
