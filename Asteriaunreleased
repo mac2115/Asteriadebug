@@ -143,6 +143,7 @@ function autoraid()
 				if v.Name ~= plr.Name then
 					local dist = (plr.Character.HumanoidRootPart.Position - v.HumanoidRootPart.Position).magnitude
 					if dist <= 300 then
+						setnetworkownership(v.HumanoidRootPart)
 						plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
 						v.Humanoid.Health = 0
 					end
@@ -307,7 +308,6 @@ function fly()
 		end
 		bdv.Name = "Flylolwap"
 		bdv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-		setscriptable(bdv, "Parent", true)
 		bdv.Parent = plr.Character.HumanoidRootPart
 		if
 			getgenv().Control.left == -1
@@ -328,12 +328,8 @@ function fly()
 			end
 		end
 	else
-		if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-			for i, v in pairs(plr.Character.HumanoidRootPart:GetChildren()) do
-				if v.Name == "Flylolwap" and v:IsA("BodyVelocity") then
-					v.Parent = nil
-				end
-			end
+		if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") and bdv then
+			bdv.Parent = nil
 		end
 	end
 end
@@ -383,7 +379,7 @@ local ThemeManager = loading(game:HttpGet(repo .. "addons/ThemeManager.lua"))()
 local SaveManager = loading(game:HttpGet(repo .. "addons/SaveManager.lua"))()
 local Window = Library:CreateWindow({
 
-	Title = "Asteria.lol v1.0.1",
+	Title = "Asteria.lol v1.0.2",
 	Center = true,
 	AutoShow = true,
 	TabPadding = 8,
