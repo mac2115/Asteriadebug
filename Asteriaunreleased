@@ -378,8 +378,7 @@ local Library = loading(game:HttpGet(repo .. "Library.lua"))()
 local ThemeManager = loading(game:HttpGet(repo .. "addons/ThemeManager.lua"))()
 local SaveManager = loading(game:HttpGet(repo .. "addons/SaveManager.lua"))()
 local Window = Library:CreateWindow({
-
-	Title = "Asteria.lol v1.0.2",
+	Title = "Asteria.lol v1.0.3",
 	Center = true,
 	AutoShow = true,
 	TabPadding = 8,
