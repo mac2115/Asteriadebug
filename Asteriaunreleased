@@ -105,7 +105,7 @@ function autoraid()
 	if getgenv().Settings.Autoraid.Toggle then
 		if game.PlaceId == 14069678431 then
 			Kisuke = Workspace.NPCs.RaidBoss.Kisuke
-			if Kisuke and plr.Character then
+			if Kisuke and plr.Character and plr.Character:FindFirstChild("CharacterHandler") then
 				if plr.PlayerGui.MissionsUI.MainFrame.Visible then
 					if not plr:FindFirstChild("Kisuke") then
 						fireclickdetector(Kisuke:FindFirstChildWhichIsA("ClickDetector"))
@@ -135,9 +135,7 @@ function autoraid()
 						end
 					end
 				else
-					if plr.Character:FindFirstChild("CharacterHandler") then
-						plr.Character.CharacterHandler.Remotes.PartyCreate:FireServer()
-					end
+					plr.Character.CharacterHandler.Remotes.PartyCreate:FireServer()
 				end
 			end
 		elseif game.PlaceId == 17047374266 then
@@ -607,7 +605,6 @@ ThemeManager:ApplyToTab(Tabs["UI Settings"])
 
 SaveManager:LoadAutoloadConfig()
 
-
 task.spawn(function()
 	RunService.RenderStepped:Connect(function()
 		fly()
@@ -618,13 +615,10 @@ task.spawn(function()
 	end)
 end)
 
-
-
 task.spawn(function()
 	RunService.Heartbeat:Connect(function()
 		autoraid()
 	end)
 end)
-
 
 getgenv().loaded = true
