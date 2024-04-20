@@ -135,16 +135,19 @@ function autoraid()
 						end
 					end
 				else
-					plr.Character.CharacterHandler.Remotes.PartyCreate:FireServer()
+					if plr.Character:FindFirstChild("CharacterHandler") then
+						plr.Character.CharacterHandler.Remotes.PartyCreate:FireServer()
+					end
 				end
 			end
 		elseif game.PlaceId == 17047374266 then
 			for i, v in next, Workspace.Entities:GetChildren() do
-				if v.Name ~= plr.Name and v:FindFirstChild('Head') then
-					plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0,10,0)
+				if v.Name ~= plr.Name and v:FindFirstChild("Head") then
+					plr.Character.Humanoid.PlatformStand = true
+					plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0, 12, 0)
 					if isnetworkowner(v.HumanoidRootPart) then
 						v.Head:Destroy()
-						plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0,10,0)
+						plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0, 12, 0)
 					end
 				end
 			end
