@@ -141,10 +141,10 @@ function autoraid()
 		else
 			for i, v in next, Workspace.Entities:GetChildren() do
 				if v.Name ~= plr.Name then
-					plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0,-4,0)
+					plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0,10,0)
 					if isnetworkowner(v.HumanoidRootPart) then
 						v.Head:Destroy()
-						plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0,-4,0)
+						plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0,10,0)
 					end
 				end
 			end
