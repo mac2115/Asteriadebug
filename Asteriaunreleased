@@ -143,8 +143,9 @@ function autoraid()
 				if v.Name ~= plr.Name and v:FindFirstChild("Head") then
 					plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0, 13, 0)
 					if isnetworkowner(v.HumanoidRootPart) then
-						v.Humanoid:Destroy()
 						v.Head:Destroy()
+						task.wait()
+						v.Humanoid.Health = 0
 						plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0, 13, 0)
 					end
 				end
