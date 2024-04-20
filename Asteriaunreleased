@@ -143,10 +143,10 @@ function autoraid()
 		elseif game.PlaceId == 17047374266 then
 			for i, v in next, Workspace.Entities:GetChildren() do
 				if v.Name ~= plr.Name and v:FindFirstChild("Head") then
-					plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0, 0, 10)
+					plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0, 13,0 )
 					if isnetworkowner(v.HumanoidRootPart) then
 						v.Head:Destroy()
-						plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0, 0, 10)
+						plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0, 13, 0)
 					end
 				end
 			end
@@ -612,7 +612,14 @@ task.spawn(function()
 		noclip()
 		infjump()
 		autofarm()
+	end)
+end)
+
+task.spawn(function()
+	RunService.Heartbeat:Connect(function()
 		autoraid()
 	end)
 end)
+
+
 getgenv().loaded = true
