@@ -25,20 +25,6 @@ getgenv().Settings = {
 	Noclip = false,
 }
 
-function check(dupson)
-	if
-		dupson.Parent.Humanoid.Health <= 0
-		or ForceStop == true
-		or not _G.Played
-		or getgenv().Settings.Autofarm.Toggle
-	then
-		return false
-	else
-		return true
-	end
-end
-
-_G.Played = false
 --//Functions
 
 function angles(position)
@@ -50,6 +36,7 @@ function angles(position)
 end
 
 local TotalDuration, StartTime, PositionDelta, StartingPosition, HRP, Delta, Progress, MappedPosition
+_G.Played = false
 
 function Tween(Target, mob)
 	HRP = (plr.Character and plr.Character:FindFirstChild("HumanoidRootPart"))
@@ -102,6 +89,7 @@ end
 local TeleportService = game:GetService("TeleportService")
 local Kisuke
 _G.queued = false
+_G.Teleporting = false
 function autoraid()
 	if getgenv().Settings.Autoraid.Toggle then
 		if game.PlaceId == 14069678431 then
@@ -112,14 +100,13 @@ function autoraid()
 						fireclickdetector(Kisuke:FindFirstChildWhichIsA("ClickDetector"))
 					else
 						plr.Kisuke:FireServer("Yes")
-						for i = 0, 1 do
-							if not _G.queued then
-								queue_on_teleport([[
+						if not _G.queued then
+							queue_on_teleport([[
 									local clonef = clonefunction
 									local loading= clonef(loadstring)
 									loading(game:HttpGet("https://raw.githubusercontent.com/mac2115/Asteriadebug/main/Asteriaunreleased"))()
 									]])
-								queue_on_teleport([[
+							queue_on_teleport([[
 										repeat task.wait() until getgenv().loaded == true
 										getgenv().Settings = {
 										Autofarm = { Toggle = false, Mob = "Fishbone", Position = -10 },
@@ -131,8 +118,7 @@ function autoraid()
 										Autoraid = { Toggle = true },
 										Noclip = false,
 									}]])
-								_G.queued = true
-							end
+							_G.queued = true
 						end
 					end
 				else
@@ -145,6 +131,7 @@ function autoraid()
 					plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
 						* CFrame.new(0, 10, 0)
 						* CFrame.Angles(math.rad(-90), 0, 0)
+					plr.Character.HumanoidRootPart.Velocity = Vector3.new()
 					if plr.Character:FindFirstChild("Zanpakuto") then
 						plr.Character.CharacterHandler.Remotes.Weapon:FireServer()
 					end
@@ -156,17 +143,17 @@ function autoraid()
 						plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
 							* CFrame.new(0, 10, 0)
 							* CFrame.Angles(math.rad(-90), 0, 0)
+						plr.Character.HumanoidRootPart.Velocity = Vector3.new()
 					end
 				end
 			end
-			for i = 0, 1 do
-				if not _G.queued then
-					queue_on_teleport([[
+			if not _G.queued then
+				queue_on_teleport([[
 						local clonef = clonefunction
 						local loading= clonef(loadstring)
 						loading(game:HttpGet("https://raw.githubusercontent.com/mac2115/Asteriadebug/main/Asteriaunreleased"))()
 						]])
-					queue_on_teleport([[
+				queue_on_teleport([[
 						repeat task.wait() until getgenv().loaded == true
 						getgenv().Settings = {
 						Autofarm = { Toggle = false, Mob = "Fishbone", Position = -10 },
@@ -178,16 +165,16 @@ function autoraid()
 						Autoraid = { Toggle = true },
 						Noclip = false,
 					}]])
-					_G.queued = true
-				end
+				_G.queued = true
 			end
 		else
-			queue_on_teleport([[
+			if not _G.queued then
+				queue_on_teleport([[
 						local clonef = clonefunction
 						local loading= clonef(loadstring)
 						loading(game:HttpGet("https://raw.githubusercontent.com/mac2115/Asteriadebug/main/Asteriaunreleased"))()
 						]])
-			queue_on_teleport([[
+				queue_on_teleport([[
 						repeat task.wait() until getgenv().loaded == true
 						getgenv().Settings = {
 						Autofarm = { Toggle = false, Mob = "Fishbone", Position = -10 },
@@ -199,7 +186,26 @@ function autoraid()
 						Autoraid = { Toggle = true },
 						Noclip = false,
 					}]])
-			TeleportService:Teleport(14069678431)
+				_G.queued = true
+			end
+			if plr.Character then
+				local serverlist = ReplicatedStorage.Requests.RequestServerList:InvokeServer("Karakura Town")
+				ReplicatedStorage.Requests.RequestCCList:InvokeServer()
+				function teleport()
+					local server
+					local max = math.huge
+					if serverlist and not _G.Teleporting then
+						for i, v in next, serverlist do
+							plr.Character.CharacterHandler.Remotes.ServerListTeleport:FireServer(
+								"Karakura Town",
+								v["JobID"]
+							)
+							_G.Teleporting = true
+						end
+					end
+				end
+				teleport()
+			end
 		end
 	end
 end
@@ -363,44 +369,102 @@ function fly()
 	end
 end
 
-local characterparts = {}
-
-do
-	if plr.Character then
-		for i, v in pairs(plr.Character:GetChildren()) do
-			if v:IsA("Part") and not table.find(characterparts, v) then
-				table.insert(characterparts, v)
+function noclip()
+	if getgenv().Settings.Noclip then
+		if plr.Character then
+			for i, v in next, plr.Character:GetChildren() do
+				if v:IsA("Part") and not string.find(v.Name, "Leg") then
+					v.CanCollide = false
+				end
+			end
+		end
+	else
+		if plr.Character then
+			for i, v in next, plr.Character:GetChildren() do
+				if v:IsA("Part") and not string.find(v.Name, "Leg") then
+					v.CanCollide = true
+				end
 			end
 		end
 	end
 end
 
-plr.CharacterAdded:Connect(function(Char)
-	characterparts = {}
-	for i, v in pairs(Char:GetChildren()) do
-		if v:IsA("Part") and not table.find(characterparts, v) then
-			table.insert(characterparts, v)
-		end
-	end
-end)
+--///Stuff
 
-plr.CharacterRemoving:Connect(function(char)
-	characterparts = {}
-end)
-
-function noclip()
-	if getgenv().Settings.Noclip then
-		for i, v in characterparts do
-			v.CanCollide = false
-		end
-	else
-		for i, v in characterparts do
-			v.CanCollide = true
+function getfunc()
+	for i, v in pairs(getgc()) do
+		if
+			type(v) == "function"
+			and debug.info(v, "l") == 2242
+			and string.find(debug.info(v, "s"), "ClientHandler")
+		then
+			return v
 		end
 	end
 end
 
---ui
+function exchange()
+	local func = getfunc()
+	local item_name = getupvalues(func)[2][1]["ItemName"]
+	if func and item_name then
+		local ohTable1 = {
+			[1] = {
+				["ID"] = "d",
+				["ItemName"] = item_name,
+				["Rarity"] = "Legendary",
+			},
+			[2] = {
+				["ID"] = "",
+				["ItemName"] = item_name,
+				["Rarity"] = "Legendary",
+			},
+			[3] = {
+
+				["ID"] = "",
+				["ItemName"] = item_name,
+				["Rarity"] = "Legendary",
+			},
+			[4] = {
+				["ID"] = "",
+				["ItemName"] = item_name,
+				["Rarity"] = "Legendary",
+			},
+			[5] = {
+				["ID"] = "",
+				["ItemName"] = item_name,
+				["Rarity"] = "Legendary",
+			},
+			[6] = {
+				["ID"] = "",
+				["ItemName"] = item_name,
+				["Rarity"] = "Legendary",
+			},
+			[7] = {
+				["ID"] = "",
+				["ItemName"] = item_name,
+				["Rarity"] = "Legendary",
+			},
+			[8] = {
+				["ID"] = "",
+				["ItemName"] = item_name,
+				["Rarity"] = "Legendary",
+			},
+			[9] = {
+				["ID"] = "",
+				["ItemName"] = item_name,
+				["Rarity"] = "Legendary",
+			},
+			[10] = {
+				["ID"] = "",
+				["ItemName"] = item_name,
+				["Rarity"] = "Legendary",
+			},
+		}
+		plr.PlayerGui["EXECHANGE ITEM"].RemoteEvent:FireServer(ohTable1)
+	end
+end
+
+--//UI
 local repo = "https://raw.githubusercontent.com/HTDBarsi/LinoriaLib/main/"
 
 local Library = loading(game:HttpGet(repo .. "Library.lua"))()
@@ -421,7 +485,16 @@ local Tabs = {
 	["UI Settings"] = Window:AddTab("UI Settings"),
 }
 
-local LeftGroupBox = Tabs.Main:AddLeftGroupbox("Combat ")
+local LeftGroupBox = Tabs.Main:AddLeftGroupbox("Main")
+
+local MyButton = LeftGroupBox:AddButton({
+	Text = "Exchange helper lol",
+	Func = function()
+		exchange()
+	end,
+	DoubleClick = false,
+	Tooltip = "Click it only if you already have put an item inside of the box ",
+})
 
 LeftGroupBox:AddToggle("MyToggle", {
 	Text = "Autoraid toggle",
@@ -429,6 +502,7 @@ LeftGroupBox:AddToggle("MyToggle", {
 	Tooltip = "",
 
 	Callback = function(Value)
+		_G.Teleporting = false
 		getgenv().Settings.Autoraid.Toggle = Value
 	end,
 })
@@ -579,11 +653,13 @@ Library:OnUnload(function()
 	WatermarkConnection:Disconnect()
 	getgenv().Settings = {
 		Autofarm = { Toggle = false, Mob = "Fishbone", Position = -10 },
-		TweenSpeed = 100,
+		TweenSpeed = 150,
 		Fly = { Toggle = false, Speed = 100 },
 		Speed = { Toggle = false, Speed = 100 },
 		InfJump = false,
 		JumpHeight = 50,
+		Autoraid = { Toggle = false },
+		Noclip = false,
 	}
 	print("Unloaded!")
 	Library.Unloaded = true
