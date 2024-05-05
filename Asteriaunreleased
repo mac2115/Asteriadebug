@@ -11,18 +11,19 @@ local clonef = clonefunction
 local combat = ReplicatedStorage.Remotes.ServerCombatHandler
 local NextFrame = RunService.Heartbeat
 local ForceStop = false
-local loading = clonef(loadstring)
-local mobs = { "Fishbone", "Frisker", "LostSoul", "Jackal" }
+local loading = clonef(loadstring) --
+local mobs = { "Fishbone", "Frisker", "LostSoul", "Jackal", "BankaiNPC" }
 
 getgenv().Settings = {
 	Autofarm = { Toggle = false, Mob = "Fishbone", Position = -10 },
-	TweenSpeed = 150,
+	TweenSpeed = 75,
 	Fly = { Toggle = false, Speed = 100 },
 	Speed = { Toggle = false, Speed = 100 },
 	InfJump = false,
 	JumpHeight = 50,
 	Autoraid = { Toggle = false },
 	Noclip = false,
+	Autoquest = false,
 }
 
 --//Functions
@@ -35,10 +36,10 @@ function angles(position)
 	end
 end
 
-local TotalDuration, StartTime, PositionDelta, StartingPosition, HRP, Delta, Progress, MappedPosition
 _G.Played = false
 
 function Tween(Target, mob)
+	local TotalDuration, StartTime, PositionDelta, StartingPosition, HRP, Delta, Progress, MappedPosition
 	HRP = (plr.Character and plr.Character:FindFirstChild("HumanoidRootPart"))
 	if not HRP then
 		return
@@ -53,7 +54,7 @@ function Tween(Target, mob)
 				repeat
 					task.wait()
 					angle = angles(getgenv().Settings.Autofarm.Position)
-					if not ForceStop and getgenv().Settings.Autofarm.Toggle then
+					if not ForceStop and (getgenv().Settings.Autofarm.Toggle or getgenv().Settings.Autoquest) then
 						Delta = tick() - StartTime
 						Progress = math.min(Delta / TotalDuration, 1)
 						MappedPosition = StartingPosition + (PositionDelta * Progress)
@@ -72,8 +73,37 @@ function Tween(Target, mob)
 					end
 				until (HRP.Position - Target.p).magnitude <= 25
 					or ForceStop
-					or not getgenv().Settings.Autofarm.Toggle
+					or (not getgenv().Settings.Autofarm.Toggle and not getgenv().Settings.Autoquest)
 				if (HRP.Position - Target.p).magnitude <= 25 then
+					_G.Played = false
+				end
+			end
+		else
+			if not _G.Played then
+				repeat
+					task.wait()
+					if not ForceStop and (getgenv().Settings.Autofarm.Toggle or getgenv().Settings.Autoquest) then
+						Delta = tick() - StartTime
+						Progress = math.min(Delta / TotalDuration, 1)
+						MappedPosition = StartingPosition + (PositionDelta * Progress)
+						if (HRP.Position - Target.p).magnitude > 3 then
+							HRP.Velocity = Vector3.new()
+							HRP.CFrame = CFrame.new(MappedPosition)
+							_G.Played = true
+						else
+							HRP.Velocity = Vector3.new()
+							HRP.CFrame = CFrame.new(Target.p)
+							fireclickdetector(mob.Board.Union.ClickDetector)
+							task.wait()
+							if plr:FindFirstChild("MissionBoard") then
+								plr.MissionBoard:FireServer("Yes")
+							end
+						end
+					end
+				until (HRP.Position - Target.p).magnitude <= 3
+					or ForceStop
+					or (not getgenv().Settings.Autofarm.Toggle and not getgenv().Settings.Autoquest)
+				if (HRP.Position - Target.p).magnitude <= 3 then
 					_G.Played = false
 				end
 			end
@@ -126,24 +156,26 @@ function autoraid()
 				end
 			end
 		elseif game.PlaceId == 17047374266 then
+			if not plr.Character then
+				return
+			end
 			for i, v in next, Workspace.Entities:GetChildren() do
 				if v.Name ~= plr.Name and v:FindFirstChild("Head") then
-					plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
-						* CFrame.new(0, 10, 0)
-						* CFrame.Angles(math.rad(-90), 0, 0)
-					plr.Character.HumanoidRootPart.Velocity = Vector3.new()
-					if plr.Character:FindFirstChild("Zanpakuto") then
-						plr.Character.CharacterHandler.Remotes.Weapon:FireServer()
-					end
-					combat:FireServer("LightAttack")
-					if isnetworkowner(v.HumanoidRootPart) then
-						v.Head:Destroy()
-						task.wait()
-						v.Humanoid.Health = 0
+					if plr.Character.Humanoid.Health > 30 then
 						plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
 							* CFrame.new(0, 10, 0)
 							* CFrame.Angles(math.rad(-90), 0, 0)
 						plr.Character.HumanoidRootPart.Velocity = Vector3.new()
+						v.Head.Size = Vector3.new(15, 15, 15)
+						v.Head.Massless = true
+						if plr.Character:FindFirstChild("Zanpakuto") then
+							plr.Character.CharacterHandler.Remotes.Weapon:FireServer()
+						end
+						combat:FireServer("LightAttack")
+					else
+						plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
+							* CFrame.new(0, 50, 0)
+							* CFrame.Angles(math.rad(-90), 0, 0)
 					end
 				end
 			end
@@ -231,7 +263,10 @@ function getmob()
 	end
 end
 
+--//AUTOFARMS
 function autolootbox() end
+
+
 
 function autofarm()
 	local mob = getmob()
@@ -246,6 +281,66 @@ function autofarm()
 	end
 end
 
+function get_quest_mob()
+	local max = math.huge
+	local mob
+	if getgenv().Settings.Autoquest then
+		for i, v in pairs(Workspace.Entities:GetChildren()) do
+			if v:FindFirstChild('HumanoidRootPart') and v:FindFirstChildWhichIsA('Humanoid') and v:FindFirstChildWhichIsA("Highlight")  then
+				local dist = (plr.Character:GetPivot().Position - v:GetPivot().Position).magnitude
+				if dist <= max then
+					max = dist
+					mob = v
+				end
+			end
+		end
+		return mob
+	end
+end
+
+function get_board()
+	local max = math.huge
+	local mob
+	if getgenv().Settings.Autoquest then
+		for i, v in pairs(Workspace.NPCs.MissionNPC:GetChildren()) do
+			if v:IsA("Model") then
+				local dist = (plr.Character.HumanoidRootPart.Position - v:GetPivot().Position).magnitude
+				if dist <= max then
+					max = dist
+					mob = v
+				end
+			end
+		end
+	end
+	return mob
+end
+
+function autoquest()
+	if not plr.Character or not getgenv().Settings.Autoquest then
+		return
+	end
+	if plr.PlayerGui.MissionsUI.MainFrame.Visible then
+		if plr.PlayerGui.MissionsUI.Queueing.Visible or plr.PlayerGui.QueueUI.Enabled then
+			local mob = get_quest_mob()
+			if mob then
+				Tween(mob.HumanoidRootPart.CFrame * CFrame.new(0, getgenv().Settings.Autofarm.Position, 0), mob)
+				if plr.Character:FindFirstChild("Zanpakuto") then
+					plr.Character.CharacterHandler.Remotes.Weapon:FireServer()
+				end
+				combat:FireServer("LightAttack")
+			else
+				ForceStop = true
+			end
+		else
+			local board = get_board()
+			Tween(board:GetPivot(), board)
+		end
+	else
+		plr.Character.CharacterHandler.Remotes.PartyCreate:FireServer()
+	end
+end
+
+--//MISC
 local UserInputService = game:GetService("UserInputService")
 local walkie = nil
 
@@ -403,67 +498,6 @@ function getfunc()
 	end
 end
 
-function exchange()
-	local func = getfunc()
-	local item_name = getupvalues(func)[2][1]["ItemName"]
-	if func and item_name then
-		local ohTable1 = {
-			[1] = {
-				["ID"] = "d",
-				["ItemName"] = item_name,
-				["Rarity"] = "Legendary",
-			},
-			[2] = {
-				["ID"] = "",
-				["ItemName"] = item_name,
-				["Rarity"] = "Legendary",
-			},
-			[3] = {
-
-				["ID"] = "",
-				["ItemName"] = item_name,
-				["Rarity"] = "Legendary",
-			},
-			[4] = {
-				["ID"] = "",
-				["ItemName"] = item_name,
-				["Rarity"] = "Legendary",
-			},
-			[5] = {
-				["ID"] = "",
-				["ItemName"] = item_name,
-				["Rarity"] = "Legendary",
-			},
-			[6] = {
-				["ID"] = "",
-				["ItemName"] = item_name,
-				["Rarity"] = "Legendary",
-			},
-			[7] = {
-				["ID"] = "",
-				["ItemName"] = item_name,
-				["Rarity"] = "Legendary",
-			},
-			[8] = {
-				["ID"] = "",
-				["ItemName"] = item_name,
-				["Rarity"] = "Legendary",
-			},
-			[9] = {
-				["ID"] = "",
-				["ItemName"] = item_name,
-				["Rarity"] = "Legendary",
-			},
-			[10] = {
-				["ID"] = "",
-				["ItemName"] = item_name,
-				["Rarity"] = "Legendary",
-			},
-		}
-		plr.PlayerGui["EXECHANGE ITEM"].RemoteEvent:FireServer(ohTable1)
-	end
-end
-
 --//UI
 local repo = "https://raw.githubusercontent.com/HTDBarsi/LinoriaLib/main/"
 
@@ -486,16 +520,6 @@ local Tabs = {
 }
 
 local LeftGroupBox = Tabs.Main:AddLeftGroupbox("Main")
-
-local MyButton = LeftGroupBox:AddButton({
-	Text = "Exchange helper lol",
-	Func = function()
-		exchange()
-	end,
-	DoubleClick = false,
-	Tooltip = "Click it only if you already have put an item inside of the box ",
-})
-
 LeftGroupBox:AddToggle("MyToggle", {
 	Text = "Autoraid toggle",
 	Default = false,
@@ -516,6 +540,20 @@ LeftGroupBox:AddToggle("MyToggle", {
 		getgenv().Settings.Autofarm.Toggle = Value
 	end,
 })
+
+--[[[
+
+LeftGroupBox:AddToggle("MyToggle", {
+	Text = "Autoquest toggle",
+	Default = false,
+	Tooltip = "",
+
+	Callback = function(Value)
+		getgenv().Settings.Autoquest = Value
+	end,
+})
+
+]]
 
 LeftGroupBox:AddDropdown("MyDropdown", {
 	Values = mobs,
@@ -710,20 +748,14 @@ ThemeManager:ApplyToTab(Tabs["UI Settings"])
 
 SaveManager:LoadAutoloadConfig()
 
-task.spawn(function()
-	RunService.RenderStepped:Connect(function()
-		fly()
-		speed()
-		noclip()
-		infjump()
-		autofarm()
-	end)
-end)
-
-task.spawn(function()
-	RunService.Heartbeat:Connect(function()
-		autoraid()
-	end)
+RunService.RenderStepped:Connect(function()
+	fly()
+	speed()
+	noclip()
+	infjump()
+	autofarm()
+	autoraid()
+	autoquest()
 end)
 
 getgenv().loaded = true
