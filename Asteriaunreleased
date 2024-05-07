@@ -91,9 +91,6 @@ function Tween(Target, mob)
 							HRP.CFrame = CFrame.new(MappedPosition)
 							_G.Played = true
 						else
-							v.HumanoidRootPart.Size = Vector3.new(20,20,20)
-							v.HumanoidRootPart.Massless = true
-							v.HumanoidRootPart.Transparency = 0.6
 							HRP.Velocity = Vector3.new()
 							HRP.CFrame = CFrame.new(Target.p)
 							fireclickdetector(mob.Board.Union.ClickDetector)
