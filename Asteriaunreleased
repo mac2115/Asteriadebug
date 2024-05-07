@@ -163,7 +163,7 @@ function autoraid()
 				if v.Name ~= plr.Name and v:FindFirstChild("Head") then
 					if plr.Character.Humanoid.Health > 30 then
 						plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
-							* CFrame.new(0, 10, 0)
+							* CFrame.new(0, 20, 0)
 							* CFrame.Angles(math.rad(-90), 0, 0)
 						plr.Character.HumanoidRootPart.Velocity = Vector3.new()
 						v.HumanoidRootPart.Size = Vector3.new(25, 25, 25)
