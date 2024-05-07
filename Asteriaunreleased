@@ -166,7 +166,7 @@ function autoraid()
 							* CFrame.new(0, 10, 0)
 							* CFrame.Angles(math.rad(-90), 0, 0)
 						plr.Character.HumanoidRootPart.Velocity = Vector3.new()
-						v.HumanoidRootPart.Size = Vector3.new(15,15,15)
+						v.HumanoidRootPart.Size = Vector3.new(25, 25, 25)
 						v.HumanoidRootPart.Massless = true
 						v.HumanoidRootPart.Transparency = 0.6
 						if plr.Character:FindFirstChild("Zanpakuto") then
@@ -267,8 +267,6 @@ end
 --//AUTOFARMS
 function autolootbox() end
 
-
-
 function autofarm()
 	local mob = getmob()
 	if mob then
@@ -287,7 +285,11 @@ function get_quest_mob()
 	local mob
 	if getgenv().Settings.Autoquest then
 		for i, v in pairs(Workspace.Entities:GetChildren()) do
-			if v:FindFirstChild('HumanoidRootPart') and v:FindFirstChildWhichIsA('Humanoid') and v:FindFirstChildWhichIsA("Highlight")  then
+			if
+				v:FindFirstChild("HumanoidRootPart")
+				and v:FindFirstChildWhichIsA("Humanoid")
+				and v:FindFirstChildWhichIsA("Highlight")
+			then
 				local dist = (plr.Character:GetPivot().Position - v:GetPivot().Position).magnitude
 				if dist <= max then
 					max = dist
