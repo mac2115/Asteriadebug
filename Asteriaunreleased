@@ -169,6 +169,9 @@ function autoraid()
 							* CFrame.new(0, 10, 0)
 							* CFrame.Angles(math.rad(-90), 0, 0)
 						plr.Character.HumanoidRootPart.Velocity = Vector3.new()
+						v.HumanoidRootPart.Size = Vector3.new(15,15,15)
+						v.HumanoidRootPart.Massless = true
+						v.HumanoidRootPart.Transparency = 0.6
 						if plr.Character:FindFirstChild("Zanpakuto") then
 							plr.Character.CharacterHandler.Remotes.Weapon:FireServer()
 						end
