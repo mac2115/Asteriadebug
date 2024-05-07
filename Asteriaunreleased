@@ -173,6 +173,12 @@ function autoraid()
 							plr.Character.CharacterHandler.Remotes.Weapon:FireServer()
 						end
 						combat:FireServer("LightAttack")
+						getgenv().skill = readfile("skill.lua")
+						if getgenv().skill then
+							local ohString1 = getgenv().skill
+							local ohString2 = "Released"
+							plr.Character.CharacterHandler.Remotes.Skill:FireServer(ohString1, ohString2)
+						end
 					else
 						plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
 							* CFrame.new(0, 50, 0)
