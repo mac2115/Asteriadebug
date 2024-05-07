@@ -1,6 +1,10 @@
 repeat
 	task.wait()
 until game:IsLoaded()
+
+--THATS PROBABLY THE WORST CODE U WILL EVER SEE LOLLL DONT LOOK LMFAOOO
+
+
 getgenv().loaded = false
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -82,7 +86,7 @@ function Tween(Target, mob)
 			if not _G.Played then
 				repeat
 					task.wait()
-					if not ForceStop and (getgenv().Settings.Autofarm.Toggle or getgenv().Settings.Autoquest) then
+					if not ForceStop and getgenv().Settings.Autofarm.Toggle or getgenv().Settings.Autoquest then
 						Delta = tick() - StartTime
 						Progress = math.min(Delta / TotalDuration, 1)
 						MappedPosition = StartingPosition + (PositionDelta * Progress)
@@ -174,10 +178,15 @@ function autoraid()
 						plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
 							* CFrame.new(0, 50, 0)
 							* CFrame.Angles(math.rad(-90), 0, 0)
+							local ohString1 = "Skill"
+							local ohString2 = getgenv().skill
+							local ohString3 = "Pressed"
+							ReplicatedStorage.Remotes.ServerCombatHandler:FireServer(ohString1, ohString2, ohString3)
 					end
 				end
 			end
 			if not _G.queued then
+				writefile('skill.lua',getgenv().skill)
 				queue_on_teleport([[
 						local clonef = clonefunction
 						local loading= clonef(loadstring)
@@ -194,11 +203,13 @@ function autoraid()
 						JumpHeight = 50,
 						Autoraid = { Toggle = true },
 						Noclip = false,
+						getgenv().skill = readfile('skill.lua')
 					}]])
 				_G.queued = true
 			end
 		else
 			if not _G.queued then
+				writefile('skill.lua',getgenv().skill)
 				queue_on_teleport([[
 						local clonef = clonefunction
 						local loading= clonef(loadstring)
@@ -215,6 +226,7 @@ function autoraid()
 						JumpHeight = 50,
 						Autoraid = { Toggle = true },
 						Noclip = false,
+						getgenv().skill = readfile('skill.lua')
 					}]])
 				_G.queued = true
 			end
@@ -285,7 +297,7 @@ function get_quest_mob()
 			if
 				v:FindFirstChild("HumanoidRootPart")
 				and v:FindFirstChildWhichIsA("Humanoid")
-				and v:FindFirstChildWhichIsA("Highlight")
+				and v:FindFirstChild("Highlight")
 			then
 				local dist = (plr.Character:GetPivot().Position - v:GetPivot().Position).magnitude
 				if dist <= max then
@@ -316,29 +328,32 @@ function get_board()
 end
 
 function autoquest()
-	if not plr.Character or not getgenv().Settings.Autoquest then
+	if
+		not plr.Character
+		or not plr.Character:FindFirstChild("HumanoidRootPart")
+		or not getgenv().Settings.Autoquest
+	then
 		return
 	end
-	if plr.Character:FindFirstChild("HumanoidRootPart") then
-		if plr.PlayerGui.MissionsUI.MainFrame.Visible then
-			if plr.PlayerGui.MissionsUI.Queueing.Visible or plr.PlayerGui.QueueUI.Enabled then
-				local mob = get_quest_mob()
-				if mob then
-					Tween(mob.HumanoidRootPart.CFrame * CFrame.new(0, getgenv().Settings.Autofarm.Position, 0), mob)
-					if plr.Character:FindFirstChild("Zanpakuto") then
-						plr.Character.CharacterHandler.Remotes.Weapon:FireServer()
-					end
-					combat:FireServer("LightAttack")
-				else
-					ForceStop = true
-				end
+	if plr.PlayerGui.MissionsUI.MainFrame.Visible then
+		if plr.PlayerGui.QueueUI.Enabled then
+			local mob = get_quest_mob()
+			if not mob then
+				ForceStop = true
 			else
-				local board = get_board()
-				Tween(board:GetPivot(), board)
+				ForceStop = false
+				Tween(mob.HumanoidRootPart.CFrame * CFrame.new(0, getgenv().Settings.Autofarm.Position, 0), mob)
+				if plr.Character:FindFirstChild("Zanpakuto") then
+					plr.Character.CharacterHandler.Remotes.Weapon:FireServer()
+				end
+				combat:FireServer("LightAttack")
 			end
-		else
-			plr.Character.CharacterHandler.Remotes.PartyCreate:FireServer()
+		elseif not plr.PlayerGui.MissionsUI.Queueing.Visible and not plr.PlayerGui.QueueUI.Enabled then
+			local board = get_board()
+			Tween(board:GetPivot(), board)
 		end
+	else
+		plr.Character.CharacterHandler.Remotes.PartyCreate:FireServer()
 	end
 end
 
@@ -533,6 +548,19 @@ LeftGroupBox:AddToggle("MyToggle", {
 	end,
 })
 
+LeftGroupBox:AddDropdown("MyDropdown", {
+	Values = {'One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Zero'},
+	Default = 1, -- number index of the value / string
+	Multi = false, -- true / false, allows multiple choices to be selected
+
+	Text = "Self Heal slot:",
+	Tooltip = "", -- Information shown when you hover over the dropdown
+
+	Callback = function(Value)
+		getgenv().skill = Value
+	end,
+})
+
 LeftGroupBox:AddToggle("MyToggle", {
 	Text = "Autofarm toggle",
 	Default = false,
@@ -543,8 +571,6 @@ LeftGroupBox:AddToggle("MyToggle", {
 	end,
 })
 
---[[[
-
 LeftGroupBox:AddToggle("MyToggle", {
 	Text = "Autoquest toggle",
 	Default = false,
@@ -554,8 +580,6 @@ LeftGroupBox:AddToggle("MyToggle", {
 		getgenv().Settings.Autoquest = Value
 	end,
 })
-
-]]
 
 LeftGroupBox:AddDropdown("MyDropdown", {
 	Values = mobs,
